@@ -1,0 +1,90 @@
+/* Signature motion: see signature.js. Starting states hang off html.sg-js, which only the
+   module adds, so without script, under reduced motion and in screenshots everything stands
+   finished. */
+
+:root {
+  --sg-ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* spin: a round frame; the photograph inside turns with the scroll. */
+[data-sg="spin"] {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  isolation: isolate;
+}
+[data-sg="spin"] img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: rotate(var(--sg-turn, 0deg)) scale(1.02);
+  will-change: transform;
+}
+
+/* parallax: the frame clips, the photograph moves a little slower than the page. */
+[data-sg="parallax"] {
+  overflow: hidden;
+}
+[data-sg="parallax"] > img,
+[data-sg="parallax"] > picture img,
+[data-sg="parallax"] > video {
+  transform: translate3d(0, var(--sg-shift, 0%), 0) scale(1.16);
+  will-change: transform;
+}
+
+/* tilt: leans toward a fine pointer. */
+@media (hover: hover) and (pointer: fine) {
+  [data-sg="tilt"] {
+    transform: perspective(900px) rotateX(var(--sg-rx, 0deg)) rotateY(var(--sg-ry, 0deg));
+    transition: transform 220ms var(--sg-ease);
+  }
+}
+
+/* split: words in masks. */
+.sg-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.sg-word > span {
+  display: inline-block;
+}
+
+html.sg-js:not(.sg-safe) [data-sg="split"]:not(.sg-in) .sg-word > span {
+  transform: translateY(105%);
+}
+html.sg-js [data-sg="split"] .sg-word > span {
+  transition: transform 700ms var(--sg-ease);
+  transition-delay: calc(var(--sg-i, 0) * 55ms);
+}
+
+/* reveal: the children rise into place, 70 ms apart. */
+html.sg-js:not(.sg-safe) [data-sg="reveal"]:not(.sg-in) > * {
+  opacity: 0;
+  transform: translateY(28px);
+}
+html.sg-js [data-sg="reveal"] > * {
+  transition: opacity 600ms var(--sg-ease), transform 600ms var(--sg-ease);
+  transition-delay: calc(var(--sg-i, 0) * 70ms);
+}
+
+/* wipe: the photograph is uncovered from its foot. */
+html.sg-js:not(.sg-safe) [data-sg="wipe"]:not(.sg-in) {
+  clip-path: inset(100% 0 0 0);
+}
+html.sg-js [data-sg="wipe"] {
+  transition: clip-path 1000ms var(--sg-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-sg="spin"] img,
+  [data-sg="parallax"] > img,
+  [data-sg="parallax"] > picture img,
+  [data-sg="parallax"] > video,
+  [data-sg="tilt"] {
+    transform: none !important;
+  }
+}
